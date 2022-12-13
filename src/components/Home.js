@@ -2,24 +2,31 @@ import { FlexChild, FlexLayout, Select, Toast, ToastWrapper } from '@cedcommerce
 import React, { useEffect, useState } from 'react'
 import { useFetch } from '../fetchHook/FetchHook'
 export default function Home() {
+  // state for all amazon category 2-D data
   const [amazonCategory, setAmazonCategory] = useState([]);
+  // value of each select box
   const [selectedArray, setSelectedArray] = useState([]);
+  // options for each comming up select
   const [options, setOptions] = useState([])
+  // toast state
   const [toastActive, setToastActive] = useState(false)
+
+  // useFetch hook 
   const { fetchData } = useFetch();
 
+  // default useEffect for getting data execute only one time
   useEffect(() => {
-    fetchData()
-      .then(result => {
-        let data = []
-        result.split("\n").forEach((item) => {
-          data.push(item.split(" > "))
-        })
-        setAmazonCategory([...data])
+    fetchData().then(result => {
+      let data = []
+      result.split("\n").forEach((item) => {
+        data.push(item.split(" > "))
       })
+      setAmazonCategory([...data])
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // useEffect executes each time select changes
   useEffect(() => {
     let optionLength = selectedArray.length
     let tempOptions = []
@@ -46,11 +53,12 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amazonCategory, selectedArray])
 
+  // function for getting unique array
   const getUnique = (array) => {
     let uniqueArr = [...new Set(array)];
     return uniqueArr
   }
-
+  // function for select onChange
   const handleSelectValue = (value, index) => {
     var optionSplice = [...options]
     var selectedSplice = [...selectedArray]
@@ -62,11 +70,10 @@ export default function Home() {
     setSelectedArray([...selectedSplice])
     setOptions([...optionSplice])
   }
-
   return (<>
     <FlexLayout halign="center" spacing="tight">
       {options.map((item, index) => {
-        return (<FlexChild desktopWidth="50" tabWidth="66" mobileWidth="80">
+        return (<FlexChild key={index} desktopWidth="50" tabWidth="66" mobileWidth="80">
           <Select
             dropDownheight={500}
             onChange={(value) => handleSelectValue(value, index)}
